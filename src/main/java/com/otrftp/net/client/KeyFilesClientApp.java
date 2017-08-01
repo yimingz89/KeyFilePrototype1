@@ -20,7 +20,6 @@ import java.util.Scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.otrftp.common.OtrConfig;
 import com.otrftp.common.OtrCrypto;
 
 public class KeyFilesClientApp implements Runnable
@@ -33,8 +32,9 @@ public class KeyFilesClientApp implements Runnable
 
 	private String serverAddress;
 	private Socket socket;
+	private Scanner scanner = new Scanner(System.in);
 
-	private Path filePath;
+//	private Path filePath;
 	private int port;
 
 	private Thread clientThread;
@@ -43,20 +43,22 @@ public class KeyFilesClientApp implements Runnable
 
 	public static void main(String[] args) throws Exception {
 
-		if(args.length != 2) {
+		if(args.length != 3) {
 			printUsage();
+			return;
 		}
 
 		KeyFilesClientApp sender;
 
 		if(args[0].equalsIgnoreCase("--connect")) {
 			try {
-				sender = new KeyFilesClientApp(args[0], Integer.parseInt(args[1]));
+				sender = new KeyFilesClientApp(args[1], Integer.parseInt(args[2]));
 				sender.connect();
 				sender.start();
 				sender.join();
 			} catch (Exception e) {
 				printUsage();
+				return;
 			}
 		}
 		else {
@@ -134,17 +136,14 @@ public class KeyFilesClientApp implements Runnable
 	private void list(String command, OutputStream os, InputStream is) throws IOException {
 		PrintWriter pw = new PrintWriter(new OutputStreamWriter(os));
 		pw.println(command);
+		pw.flush();
 		BufferedReader br = new BufferedReader(new InputStreamReader(is));
 		System.out.println(br.readLine());
 	}
 
 	private String getCommandFromUser() {
 		System.out.print("Command: ");
-
-		Scanner scanner = new Scanner(System.in);
 		String command = scanner.nextLine();
-		scanner.close();
-
 		return command;
 	}
 

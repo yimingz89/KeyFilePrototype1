@@ -29,6 +29,7 @@ public class KeyFilesServerApp implements Runnable
 
         if (args.length != 2) {
         	printUsage();
+        	return;
         }
     	
     	KeyFilesServerApp server = new KeyFilesServerApp();
@@ -37,9 +38,10 @@ public class KeyFilesServerApp implements Runnable
 				server.listen(Integer.parseInt(args[1]));
 			} catch (Exception e) {
 				printUsage();
+				return;
 			}
 			server.start();
-			server.stop();
+//			server.stop();
 		}
 		else {
 			printUsage();

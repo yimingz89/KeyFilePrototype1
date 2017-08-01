@@ -40,7 +40,13 @@ public class KeyFilesConnection implements Runnable {
 			boolean repeat = true;
 			while (repeat) {
 				String command = getCommandFromClient();
+				if(command == null) {
+					log.info("Connection closed by client");
+					return;
+				}
+				
 				command = command.toLowerCase();
+				log.info("Received command '{}'", command);
 				switch (command) {
 				case LIST:
 					list(command);
@@ -53,6 +59,8 @@ public class KeyFilesConnection implements Runnable {
 				default:
 					break;
 				}
+				
+				log.info("Finished command");
 				//assert filePath != null;
 			}
 			// TODO: send file here!
@@ -70,9 +78,13 @@ public class KeyFilesConnection implements Runnable {
 
 	private void list(String command) {
 		pw.println(Arrays.toString(KeyFilesServerApp.usernames));
+		pw.flush();
 	}
 
 	private String getCommandFromClient() throws IOException {
+//		char[] command = new char[4];
+//		br.read(command);
+//		return new String(command);
 		return br.readLine();
 	}
 }
