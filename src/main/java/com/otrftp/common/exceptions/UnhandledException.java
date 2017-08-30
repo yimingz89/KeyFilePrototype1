@@ -2,9 +2,6 @@ package com.otrftp.common.exceptions;
 
 public class UnhandledException extends RuntimeException {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	public UnhandledException() {
