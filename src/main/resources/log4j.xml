@@ -10,7 +10,7 @@
 	    </layout>
 	</appender>
 	
-	<logger name="com.otrftp.net.server" additivity="false">
+	<logger name="com.otrftp.net" additivity="false">
 		<level value="debug" />
 		<appender-ref ref="console" />		
 	</logger>
