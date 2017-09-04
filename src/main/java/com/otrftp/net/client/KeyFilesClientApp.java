@@ -14,6 +14,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.nio.file.Files;
 import java.util.Scanner;
 
 
@@ -128,6 +129,14 @@ public class KeyFilesClientApp implements Runnable
 
     @Override
     public void run() {
+        
+        // login to Keybase
+        try {
+            KeybaseCommandLine.KeybaseLogin(user);
+        }
+        catch(Throwable e) {
+            log.error("Unable to login to Keybase");
+        }
 
         try (OutputStream os = serverSocket.getOutputStream();
                 InputStream is = serverSocket.getInputStream()) {
@@ -258,21 +267,35 @@ public class KeyFilesClientApp implements Runnable
         output.write(fileName.getBytes());
         output.write('\n');
         output.flush();
-
-        FileInputStream fis = new FileInputStream(fileName);
-        byte[] buffer = new byte[4096];
-
-        int bytesRead = 0;
-        int totalSent = 0;
-        while ((bytesRead = fis.read(buffer)) > 0) {
-            totalSent += bytesRead;
-            output.write(buffer, 0, bytesRead);
+        
+        String encryptedMsg;
+//        File file = new File(fileName);
+        try {
+            encryptedMsg = KeybaseCommandLine.encrypt(fileName, receiverName);
+            output.write(encryptedMsg.getBytes());
         }
-
-        fis.close();
-        output.close();	
-
-        System.out.println("client: " + totalSent);
+        catch (Exception e){
+            log.error("Could not read bytes");
+        }
+        
+        
+        output.close();
+        
+        
+//        FileInputStream fis = new FileInputStream(fileName);
+//        byte[] buffer = new byte[4096];
+//
+//        int bytesRead = 0;
+//        int totalSent = 0;
+//        while ((bytesRead = fis.read(buffer)) > 0) {
+//            totalSent += bytesRead;
+//            output.write(buffer, 0, bytesRead);
+//        }
+//
+//        fis.close();
+//        output.close();	
+//
+//        System.out.println("client: " + totalSent);
     }
 
     private void appearOnline(OutputStream os, InputStream is) throws IOException {
