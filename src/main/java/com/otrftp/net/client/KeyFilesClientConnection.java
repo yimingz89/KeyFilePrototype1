@@ -1,11 +1,12 @@
 package com.otrftp.net.client;
 
 import static com.otrftp.common.IOUtils.*;
+
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +47,10 @@ public class KeyFilesClientConnection implements Runnable {
 		//BufferedReader br = new BufferedReader(new InputStreamReader(dis));
 		
 		String fileName = readLine(dis);
-		FileOutputStream fos = new FileOutputStream(fileName); // this servers as the receiving file
+		String tempFile = "encrypted_" + fileName;
+	
+	
+		FileOutputStream fos = new FileOutputStream(tempFile); // this serves as the receiving file
 
 		int read = 0;
 		int totalRead = 0;
@@ -54,10 +58,18 @@ public class KeyFilesClientConnection implements Runnable {
 			totalRead++;
 			fos.write(read);
 		}
-		System.out.println("read " + totalRead + " bytes.");
-
 		fos.close();
 		dis.close();
+
+		System.out.println("read " + totalRead + " bytes.");
+		
+		String decryptedMsg = KeybaseCommandLine.decrypt(tempFile);
+        new File(tempFile).delete();
+
+		FileOutputStream fos1 = new FileOutputStream("decrypted_" + fileName);
+		fos1.write(decryptedMsg.getBytes());
+		fos1.close();
+		
 	}
 
 
